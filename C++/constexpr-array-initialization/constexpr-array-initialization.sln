@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1062
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "constexpr-array-initialization", "constexpr-array-initialization\constexpr-array-initialization.vcxproj", "{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Debug|x64.ActiveCfg = Debug|x64
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Debug|x64.Build.0 = Debug|x64
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Debug|x86.ActiveCfg = Debug|Win32
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Debug|x86.Build.0 = Debug|Win32
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Release|x64.ActiveCfg = Release|x64
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Release|x64.Build.0 = Release|x64
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Release|x86.ActiveCfg = Release|Win32
+		{12D4888D-0EF0-4F7C-A20C-D178FAFD2406}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F1400AA-845A-4C2E-8B70-017AADF8487A}
+	EndGlobalSection
+EndGlobal
