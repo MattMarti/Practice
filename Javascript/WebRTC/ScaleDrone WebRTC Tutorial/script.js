@@ -19,16 +19,11 @@ function onError(error) {
     console.error(error);
 };
 
-// Scaledrone works by letting you subscribe to a room, then broadcast messages sent
-// to all subscribed users.
-// To use, add this before </head> tag: 
-//      <script type='text/javascript' src='https://cdn.scaledrone.com/scaledrone.min.js'></script>
-
 // Subscribe to a room
 // Room name needs to be prefixed with 'observable-'
 const roomName = 'observable-' + roomHash;
 let room;
-const drone = new ScaleDrone('yiS12Ts5RdNhebyM');
+const drone = new ScaleDrone('C00ByYrXvpYm9Ror');
 
 drone.on('open', error => {
     if (error) {
