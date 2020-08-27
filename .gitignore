@@ -59,3 +59,7 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
+
+# mp4 videos I shouldn't have
+*.mp4
+video-streaming/PyAV/SomeVideo/*.jpg
