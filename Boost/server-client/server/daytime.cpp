@@ -7,6 +7,7 @@ Daytime 3 - An Asynchronous TCP Daytime Server
 #include <chrono>
 #include <memory>
 #include <thread>
+#include <ctime>
 
 #include <boost/bind/bind.hpp>
 #include <boost/asio.hpp>
@@ -14,7 +15,13 @@ Daytime 3 - An Asynchronous TCP Daytime Server
 using boost::asio::ip::tcp;
 
 std::string make_daytime_string() {
-    return "Hello client!\n";
+    using namespace std;
+
+    auto start = std::chrono::system_clock::now();
+    auto legacyStart = std::chrono::system_clock::to_time_t(start);
+    string datestr = string(std::ctime(&legacyStart));
+
+    return datestr;
 }
 
 // This is defined with a shared pointer because we want to keep the object alive as long
@@ -34,11 +41,10 @@ public:
     }
 
     void start() {
-        // Store the message  and keep data valid until the async operation is done
-        _message = make_daytime_string();
-
         // You must specify only the args that match the handler's parameter list.
         for (size_t i = 0; i < 10; i++) {
+            _message = make_daytime_string();
+
             boost::asio::async_write(_socket,
                 boost::asio::buffer(_message),
                 boost::bind(&My_TCP_Connection::handle_write,
@@ -84,7 +90,7 @@ private:
 int main() {
     try {
         boost::asio::io_context io;
-        My_TCP_Server server(io);
+        My_TCP_Server tcp_server(io);
         io.run();
     }
     catch (std::exception& e) {
