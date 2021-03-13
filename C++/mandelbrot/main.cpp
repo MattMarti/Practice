@@ -2,11 +2,15 @@
 #include <cmath>
 #include <complex>
 #include <thread>
+#include <condition_variable>
+#include <mutex>
 
 #include <immintrin.h>
 
 #define OLC_PGE_APPLICATION
 #include <olcPixelGameEngine.h>
+
+const int nMaxThreads = 32;
 
 class olcFractalExplorer : public olc::PixelGameEngine
 {
@@ -42,6 +46,7 @@ public:
     bool OnUserCreate() override
     {
         pFractal = new int[ScreenWidth() * ScreenHeight()]{ 0 };
+        InitializeThreadPool();
         return true;
     }
 
@@ -87,6 +92,7 @@ public:
         if (GetKey(olc::K4).bPressed) nMode = 3;
         if (GetKey(olc::K5).bPressed) nMode = 4;
         if (GetKey(olc::K6).bPressed) nMode = 5;
+        if (GetKey(olc::K7).bPressed) nMode = 6;
         if (GetKey(olc::UP).bPressed) nIterations += 64;
         if (GetKey(olc::DOWN).bPressed) nIterations -= 64;
         if (nIterations < 64) nIterations = 64;
@@ -103,6 +109,7 @@ public:
         case 3: CreateFractalNoAbs(pix_tl, pix_br, frac_tl, frac_br, nIterations); break;
         case 4: CreateFractalIntrinsics(pix_tl, pix_br, frac_tl, frac_br, nIterations); break;
         case 5: CreateFractalThreading(pix_tl, pix_br, frac_tl, frac_br, nIterations); break;
+        case 6: CreateFractalThreadPool(pix_tl, pix_br, frac_tl, frac_br, nIterations); break;
         }
 
         // STOP TIMING
@@ -136,6 +143,7 @@ public:
         case 3: DrawString(0, 0, "4: No abs(z) Method", olc::WHITE, 3); break;
         case 4: DrawString(0, 0, "5: Vector Extensions Method", olc::WHITE, 3); break;
         case 5: DrawString(0, 0, "6: Threading Method", olc::WHITE, 3); break;
+        case 6: DrawString(0, 0, "7: Thread Pool Method", olc::WHITE, 3); break;
         }
 
         DrawString(0, 30, "Time Taken: " + std::to_string(elapsedTime.count()) + "s", olc::WHITE, 3);
@@ -284,7 +292,6 @@ public:
     // AVX-256 chip parallelism. We'll do 4 rows at a time. This should speed us up 4x
     void CreateFractalIntrinsics(const olc::vi2d& pix_tl, const olc::vi2d& pix_br, const olc::vd2d& frac_tl, const olc::vd2d& frac_br, int iterations)
     {
-
         double x_scale = (frac_br.x - frac_tl.x) / (double(pix_br.x) - double(pix_tl.x));
         double y_scale = (frac_br.y - frac_tl.y) / (double(pix_br.y) - double(pix_tl.y));
 
@@ -455,10 +462,6 @@ public:
     // Let's try threading to speed this up! Use all our CPUs
     void CreateFractalThreading(const olc::vi2d& pix_tl, const olc::vi2d& pix_br, const olc::vd2d& frac_tl, const olc::vd2d& frac_br, int iterations)
     {
-        double x_scale = (frac_br.x - frac_tl.x) / (double(pix_br.x) - double(pix_tl.x));
-        double y_scale = (frac_br.y - frac_tl.y) / (double(pix_br.y) - double(pix_tl.y));
-
-        const int nMaxThreads = 32;
         int nSectionWidth = (pix_br.x - pix_tl.x) / nMaxThreads;
         double dFractalWidth = (frac_br.x - frac_tl.x) / double(nMaxThreads);
 
@@ -479,6 +482,83 @@ public:
         {
             t[i].join();
         }
+    }
+
+    // Use a thread pool to eliminate the overhead of entering/exiting threads
+    struct WorkerThread
+    {
+        olc::vi2d pix_tl = { 0,0 };
+        olc::vi2d pix_br = { 0,0 };
+        olc::vd2d frac_tl = { 0, 0 };
+        olc::vd2d frac_br = { 0, 0 };
+        int iterations = 0;
+        std::condition_variable cvStart;
+        bool alive = true;
+        std::mutex mux;
+        int screen_width = 0;
+        int* fractal = nullptr;
+        
+        olcFractalExplorer* owner = nullptr;
+
+        std::thread thread;
+
+        void Start(const olc::vi2d& ptl, const olc::vi2d& pbr, const olc::vd2d& ftl, const olc::vd2d& fbr, int it)
+        {
+            pix_tl = ptl;
+            pix_br = pbr;
+            frac_tl = ftl;
+            frac_br = fbr;
+            iterations = it;
+            std::unique_lock<std::mutex> lm(mux);
+            cvStart.notify_one();
+        }
+
+        void CreateFractal()
+        {
+            while (alive)
+            {
+                std::unique_lock<std::mutex> lm(mux);
+                cvStart.wait(lm);
+
+                owner->CreateFractalIntrinsics(pix_tl, pix_br, frac_tl, frac_br, iterations);
+
+                owner->nWorkerComplete++;
+            }
+        }
+    };
+    WorkerThread workers[nMaxThreads];
+    std::atomic<int> nWorkerComplete; // Signal that a worker thread has completed it's part of the fractal
+
+    void InitializeThreadPool()
+    {
+        for (int i = 0; i < nMaxThreads; i++)
+        {
+            workers[i].owner = this;
+            workers[i].alive = true;
+            workers[i].fractal = pFractal;
+            workers[i].screen_width = ScreenWidth();
+            workers[i].thread = std::thread(&WorkerThread::CreateFractal, &workers[i]);
+        }
+    }
+    void CreateFractalThreadPool(const olc::vi2d& pix_tl, const olc::vi2d& pix_br, const olc::vd2d& frac_tl, const olc::vd2d& frac_br, int iterations)
+    {
+        int nSectionWidth = (pix_br.x - pix_tl.x) / nMaxThreads;
+        double dFractalWidth = (frac_br.x - frac_tl.x) / double(nMaxThreads);
+
+        nWorkerComplete = 0;
+
+        for (size_t i = 0; i < nMaxThreads; i++)
+        {
+            workers[i].Start(
+                olc::vi2d(pix_tl.x + nSectionWidth * (i), pix_tl.y),
+                olc::vi2d(pix_tl.x + nSectionWidth * (i + 1), pix_br.y),
+                olc::vd2d(frac_tl.x + dFractalWidth * double(i), frac_tl.y),
+                olc::vd2d(frac_tl.x + dFractalWidth * double(i + 1), frac_br.y),
+                iterations);
+        }
+
+        while (nWorkerComplete < nMaxThreads) // Wait for all workers to complete
+        { } // Probabl a better way to do this
     }
 };
 
