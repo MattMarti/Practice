@@ -13,6 +13,9 @@ build/
 # Python cache folder
 __pycache__/
 
+# Rust Folders
+target/
+
 # Visual Studio cache
 .vs/
 
