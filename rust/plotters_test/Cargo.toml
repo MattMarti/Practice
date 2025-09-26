@@ -4,15 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-plotters = "0.3.7"
+plotters = {version="0.3.7", features=["ttf"]}
+plotters-bitmap = "0.3.7"
 nalgebra = "0.33.2"
 minifb = "0.23.0"
-
-[dependencies.plotters]
-git = "https://github.com/plotters-rs/plotters"
-default-features = false
-features = ["ttf"]
-
-[dependencies.plotters-bitmap]
-default-features = false
-git = "https://github.com/plotters-rs/plotters"
