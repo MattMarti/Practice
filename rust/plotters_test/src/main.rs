@@ -19,96 +19,6 @@ use std::error::Error;
 use std::time::SystemTime;
 use std::borrow::{Borrow, BorrowMut};
 
-// https://plotters-rs.github.io/book/basic/basic_data_plotting.html
-fn basic_plotting_demo() {
-//
-//    // Not included: Folder must already exist
-//    fs::create_dir_all("images").unwrap();
-//
-//    // I guess these images come with the library
-//    let root_area = BitMapBackend::new("images/0.1.png", (1024, 768)).into_drawing_area();
-//    root_area.fill(&WHITE).unwrap();
-//
-//    let mut chart = ChartBuilder::on(&root_area)
-//        .build_cartesian_2d(-3.14..3.14, -1.2..1.2)
-//        .unwrap();
-//
-//    chart.draw_series(LineSeries::new(
-//        (-314..314).map(|x| x as f64 / 100.0).map(|x| (x, x.sin())), &RED
-//    )).unwrap();
-//
-//    println!("Check out \"images/0.1.png\"");
-}
-
-// https://github.com/plotters-rs/plotters-piston/blob/master/examples/cpustat.rs
-fn cpu_plot() {
-    //// This example uses Piston Window to render a live view of CPU Usages
-    //const FPS: u32 = 10;
-    //const LENGTH: u32 = 20;
-    //const N_DATA_POINTS: usize = (FPS * LENGTH) as usize;
-    //
-    //let mut window: PistonWindow = WindowSettings::new("Real Time CPU Usage", [450, 300])
-    //.samples(4)
-    //.build()
-    //.unwrap();
-    //
-    //let my_sys = System::new();
-    //window.set_max_fps(FPS as u64);
-    //let mut load_measurement: Vec<_> = (0..FPS).map(|_| my_sys.cpu_load().unwrap()).collect();
-    //let mut epoch = 0;
-    //let mut data = vec![];
-    //while let Some(_) = draw_piston_window(&mut window, |b| {
-    //    let cpu_loads = load_measurement[epoch % FPS as usize].done()?;
-    //    let root = b.into_drawing_area();
-    //    root.fill(&WHITE)?;
-    //
-    //    if data.len() < cpu_loads.len() {
-    //        for _ in data.len()..cpu_loads.len() {
-    //            data.push(VecDeque::from(vec![0f32; N_DATA_POINTS + 1]));
-    //        }
-    //    }
-    //    for (core_load, target) in cpu_loads.into_iter().zip(data.iter_mut()) {
-    //        if target.len() == N_DATA_POINTS + 1 {
-    //            target.pop_front();
-    //        }
-    //        target.push_back(1.0 - core_load.idle);
-    //    }
-    //    let mut cc = ChartBuilder::on(&root)
-    //        .margin(10)
-    //        .caption("CPU Usage", ("sans-serif", 30))
-    //        .x_label_area_size(40)
-    //        .y_label_area_size(50)
-    //        .build_cartesian_2d(0..N_DATA_POINTS as u32, 0f32..1f32)?;
-    //    cc.configure_mesh()
-    //        .x_label_formatter(&|x| format!("{}", -(LENGTH as f32) + (*x as f32 / FPS as f32)))
-    //        .y_label_formatter(&|y| format!("{}%", (*y * 100.0) as u32))
-    //        .x_labels(15)
-    //        .y_labels(5)
-    //        .x_desc("Seconds")
-    //        .y_desc("% Busy")
-    //        .axis_desc_style(("sans-serif", 15))
-    //        .draw()?;
-    //
-    //    for (idx, data) in (0..).zip(data.iter()) {
-    //        cc.draw_series(LineSeries::new(
-    //            (0..).zip(data.iter()).map(|(a, b)| (a, *b)),
-    //            &Palette99::pick(idx),
-    //        ))?
-    //        .label(format!("CPU {}", idx))
-    //        .legend(move |(x, y)| {
-    //            Rectangle::new([(x - 5, y - 5), (x + 5, y + 5)], &Palette99::pick(idx))
-    //        });
-    //    }
-    //    cc.configure_series_labels()
-    //        .background_style(&WHITE.mix(0.8))
-    //        .border_style(&BLACK)
-    //        .draw()?;
-    //    load_measurement[epoch % FPS as usize] = my_sys.cpu_load()?;
-    //    epoch += 1;
-    //    Ok(())
-    //}) {}
-}
-
 const W: usize = 800;
 const H: usize = 600;
 
@@ -232,7 +142,7 @@ fn minifb_plot() {
                         |(&(e, x0, y0), &(_, x1, y1))| {
                             PathElement::new(
                                 vec![(x0, y0), (x1, y1)],
-                                &GREEN.mix(((e - epoch) * 20.0).exp()),
+                                &BLUE.mix(((e - epoch) * 20.0).exp()),
                             )
                         },
                     )).unwrap();
@@ -274,8 +184,8 @@ fn main() {
 
     match env::args().collect::<Vec::<_>>().last() {
         Some(arg) => match arg.as_str() {
-            "basic" => basic_plotting_demo(),
-            "cpu" => cpu_plot(),
+            //"basic" => basic_plotting_demo(),
+            //"cpu" => cpu_plot(),
             "minifb" => minifb_plot(),
             _ => print_help(),
         },
