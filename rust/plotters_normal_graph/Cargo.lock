@@ -782,8 +782,8 @@ dependencies = [
  "lazy_static",
  "num-traits",
  "pathfinder_geometry",
- "plotters-backend 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "plotters-bitmap 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "plotters-backend",
+ "plotters-bitmap",
  "plotters-svg",
  "ttf-parser",
  "wasm-bindgen",
@@ -797,11 +797,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df42e13c12958a16b3f7f4386b9ab1f3e7933914ecea48da7139435263a4172a"
 
 [[package]]
-name = "plotters-backend"
-version = "0.3.7"
-source = "git+https://github.com/plotters-rs/plotters#0f195eadaac7d9a2390a3707fbe192f8e2645d34"
-
-[[package]]
 name = "plotters-bitmap"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -809,15 +804,7 @@ checksum = "72ce181e3f6bf82d6c1dc569103ca7b1bd964c60ba03d7e6cdfbb3e3eb7f7405"
 dependencies = [
  "gif",
  "image",
- "plotters-backend 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "plotters-bitmap"
-version = "0.3.7"
-source = "git+https://github.com/plotters-rs/plotters#0f195eadaac7d9a2390a3707fbe192f8e2645d34"
-dependencies = [
- "plotters-backend 0.3.7 (git+https://github.com/plotters-rs/plotters)",
+ "plotters-backend",
 ]
 
 [[package]]
@@ -826,17 +813,17 @@ version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51bae2ac328883f7acdfea3d66a7c35751187f870bc81f94563733a154d7a670"
 dependencies = [
- "plotters-backend 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "plotters-backend",
 ]
 
 [[package]]
-name = "plotters_test"
+name = "plotters_normal_graph"
 version = "0.1.0"
 dependencies = [
  "minifb",
  "nalgebra",
  "plotters",
- "plotters-bitmap 0.3.7 (git+https://github.com/plotters-rs/plotters)",
+ "plotters-bitmap",
 ]
 
 [[package]]
