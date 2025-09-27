@@ -102,7 +102,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     + Text::new(format!("{:?}", coord), (0, 15), ("sans-serif", 15))
             },
         ))?;
-    }
+    };
     let mut window = Window::new(
         "My Plot",
         WIDTH,
